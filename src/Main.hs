@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# OPTIONS_GHC -Wall -Werror #-}
 
 module Main where
 
@@ -12,6 +11,7 @@ import Text.Regex.TDFA
 import Data.Foldable
 import Data.Word
 import Data.Map.Strict (Map, (!?))
+import Data.List (nub)
 import qualified Data.Map.Strict as M
 import qualified Data.ByteString.Char8 as B
 
@@ -40,9 +40,9 @@ replaceColorVar fileContents nameB = do
       nameFun  = bool (pure . variableColor) (pure . keyToVal) nameB
   (pure varBlock) <> (replaceAllList matchColors nameFun fileContents)
   where 
-    colors   = getColors fileContents
+    colors   = nub $ getColors fileContents
     nameFun' = bool (pure . colorToVar) (colorInput colorToVarNamed) nameB
-    matchColors = map matchExact colors
+    matchColors = map matchExact $ colors
     notColon ':' = False
     notColon _ = True
 

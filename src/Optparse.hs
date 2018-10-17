@@ -5,7 +5,6 @@ module Optparse where
 import Data.Semigroup ((<>))
 import Data.ByteString.Char8 (ByteString)
 import Options.Applicative
-import qualified Data.ByteString.Char8 as B
 
 default (ByteString)
 

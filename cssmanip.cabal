@@ -17,6 +17,7 @@ cabal-version:       >=1.10
 ghc-options:         -Wall -Werror
 
 executable cssmanip
+  ghc-options:         -Wall -Werror
   main-is:             Main.hs
   other-modules:       Optparse
   -- other-extensions:

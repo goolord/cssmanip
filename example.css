@@ -1,5 +1,15 @@
 html {
   color: #000000;
+  pee-color: #000000;
+  background-color: #fff;
+  border-color: rgba(100,200,300,0)
+  box-shadow-color: rgb(100,200,300)
+  border-radius: 3em;
+}
+
+body {
+  color: #000000;
+  pee-color: #000000;
   background-color: #fff;
   border-color: rgba(100,200,300,0)
   box-shadow-color: rgb(100,200,300)
