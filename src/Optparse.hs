@@ -11,6 +11,7 @@ default (ByteString)
 
 data ColorOpt = ColorOpt
   { var        :: Bool 
+  , name       :: Bool
   , filePath   :: FilePath
   }
 
@@ -27,7 +28,13 @@ colorOpt = ColorOpt
          <> short 'v'
          <> help "Convert colors to css variables"
           )
+      <*> switch
+          ( long "name"
+         <> short 'n'
+         <> help "name the variable of each color"
+          )
       <*> strArgument
           ( help "Filepath of css/html file"
+         <> metavar "PATH"
           )
 

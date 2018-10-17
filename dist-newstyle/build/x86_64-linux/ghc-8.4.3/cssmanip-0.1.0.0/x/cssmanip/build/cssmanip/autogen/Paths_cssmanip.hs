@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/home/zach/.cabal/bin"
-libdir     = "/home/zach/.cabal/lib/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0-inplace-cssmanip"
-dynlibdir  = "/home/zach/.cabal/lib/x86_64-linux-ghc-8.4.3"
-datadir    = "/home/zach/.cabal/share/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0"
-libexecdir = "/home/zach/.cabal/libexec/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0"
-sysconfdir = "/home/zach/.cabal/etc"
+bindir     = "/home/zachchurchill/.cabal/bin"
+libdir     = "/home/zachchurchill/.cabal/lib/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0-inplace-cssmanip"
+dynlibdir  = "/home/zachchurchill/.cabal/lib/x86_64-linux-ghc-8.4.3"
+datadir    = "/home/zachchurchill/.cabal/share/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0"
+libexecdir = "/home/zachchurchill/.cabal/libexec/x86_64-linux-ghc-8.4.3/cssmanip-0.1.0.0"
+sysconfdir = "/home/zachchurchill/.cabal/etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "cssmanip_bindir") (\_ -> return bindir)
