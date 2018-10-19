@@ -12,6 +12,7 @@ import Data.Foldable
 import Data.Word
 import Data.Map.Strict (Map, (!?))
 import Data.List (nub)
+import Data.Functor.Identity
 import qualified Data.Map.Strict as M
 import qualified Data.ByteString.Char8 as B
 
@@ -38,7 +39,7 @@ replaceColorVar fileContents nameB = do
   (varBlock, as) <- appendVar nameFun' colors
   let keyToVal x = "var(" <> ( B.takeWhile notColon $ maybe mempty id $ as !? x ) <> ")"
       nameFun  = bool (pure . variableColor) (pure . keyToVal) nameB
-  (pure varBlock) <> (replaceAllList matchColors nameFun fileContents)
+  (pure varBlock) <> (replaceAllListM matchColors nameFun fileContents)
   where 
     colors   = nub $ getColors fileContents
     nameFun' = bool (pure . colorToVar) (colorInput colorToVarNamed) nameB
@@ -95,8 +96,11 @@ variableColor color = "var(--" <> color <> ")"
 variableColorNamed :: ByteString -> ByteString -> ByteString
 variableColorNamed vname _ = "var(--" <> vname <> ")"
 
-replaceAll :: Monad m => Regex -> (ByteString -> m ByteString) -> ByteString -> m ByteString
-replaceAll re f s = do
+replaceAll :: Regex -> (ByteString -> ByteString) -> ByteString -> ByteString
+replaceAll re f s = runIdentity $ replaceAllM re (Identity . f) s
+
+replaceAllM :: Monad m => Regex -> (ByteString -> m ByteString) -> ByteString -> m ByteString
+replaceAllM re f s = do
   (_, end, start) <- foldlM go (0, s, id) $ getAllMatches (match re s :: AllMatches [] (Int, Int))
   return (start end)
   where 
@@ -106,10 +110,13 @@ replaceAll re f s = do
       in do new <- f matched
             return (off + len, remaining, write . (skip <>) . (new <>))
 
-replaceAllList :: Monad m => [Regex] -> (ByteString -> m ByteString) -> ByteString -> m ByteString
-replaceAllList (r:[]) f s = replaceAll r f s
-replaceAllList (r:rs) f s = replaceAllList rs f =<< replaceAll r f s
-replaceAllList ([]) _ _ = pure mempty
+replaceAllList :: [Regex] -> (ByteString -> ByteString) -> ByteString -> ByteString
+replaceAllList rs f s = runIdentity $ replaceAllListM rs (Identity . f) s
+
+replaceAllListM :: Monad m => [Regex] -> (ByteString -> m ByteString) -> ByteString -> m ByteString
+replaceAllListM (r:[]) f s = replaceAllM r f s
+replaceAllListM (r:rs) f s = replaceAllListM rs f =<< replaceAllM r f s
+replaceAllListM ([]) _ _ = pure mempty
 
 escapeREString :: ByteString -> ByteString
 escapeREString bs = B.foldr esc mempty bs

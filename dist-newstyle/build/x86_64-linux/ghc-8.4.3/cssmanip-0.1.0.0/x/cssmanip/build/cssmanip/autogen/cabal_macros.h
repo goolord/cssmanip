@@ -44,15 +44,15 @@
   (major1) == 0 && (major2) == 5 && (minor) <= 11)
 #endif /* MIN_VERSION_containers */
 
-/* package optparse-applicative-0.14.2.0 */
+/* package optparse-applicative-0.14.3.0 */
 #ifndef VERSION_optparse_applicative
-#define VERSION_optparse_applicative "0.14.2.0"
+#define VERSION_optparse_applicative "0.14.3.0"
 #endif /* VERSION_optparse_applicative */
 #ifndef MIN_VERSION_optparse_applicative
 #define MIN_VERSION_optparse_applicative(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  14 || \
-  (major1) == 0 && (major2) == 14 && (minor) <= 2)
+  (major1) == 0 && (major2) == 14 && (minor) <= 3)
 #endif /* MIN_VERSION_optparse_applicative */
 
 /* package regex-tdfa-1.2.3.1 */
