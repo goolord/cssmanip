@@ -3,45 +3,52 @@
 
 module Main where
 
+import Data.Maybe
 import Data.Bool
 import Options.Applicative
 import Optparse
 import Data.ByteString.Char8 (ByteString)
 import Text.Regex.TDFA
 import Data.Foldable
-import Data.Word
 import Data.Map.Strict (Map, (!?))
 import Data.List (nub)
 import Data.Functor.Identity
 import qualified Data.Map.Strict as M
 import qualified Data.ByteString.Char8 as B
+import System.Process
 
-default (ByteString)
+blank :: Applicative m => m ()
+blank = pure ()
 
-data RGBa = RGBa 
-  { red   :: Word8
-  , blue  :: Word8
-  , green :: Word8
-  , alpha :: Word8
-  }
+bb :: Bool -> IO () -> IO ()
+bb b act = if b then act else blank
 
 main :: IO ()
 main = do
   options <- execParser opts
   fileContents <- B.readFile $ filePath options
-  B.putStrLn =<< bool 
-    (pure $ "not implimented") 
-    (replaceColorVar fileContents $ name options)
-    (var options)
+  bb (var options)
+     (B.putStrLn =<< (replaceColorVar fileContents $ name options))
+  maybe blank (B.putStrLn =<<) (apColor fileContents <$> cmd options)
+
+apColor :: ByteString -> String -> IO ByteString
+apColor fileContents cmd' = do 
+  replaceAllListM matchColors runCmd fileContents
+  where
+    colors = nub $ getColors fileContents
+    matchColors = map matchExact $ colors
+    runCmd x = do 
+      output <- readCreateProcess (shell cmd') (B.unpack x)
+      pure $ B.pack output
 
 replaceColorVar :: ByteString -> Bool -> IO ByteString
 replaceColorVar fileContents nameB = do
   (varBlock, as) <- appendVar nameFun' colors
-  let keyToVal x = "var(" <> ( B.takeWhile notColon $ maybe mempty id $ as !? x ) <> ")"
+  let keyToVal x = "var(" <> ( B.takeWhile notColon $ fromMaybe mempty $ as !? x ) <> ")"
       nameFun  = bool (pure . variableColor) (pure . keyToVal) nameB
   (pure varBlock) <> (replaceAllListM matchColors nameFun fileContents)
   where 
-    colors   = nub $ getColors fileContents
+    colors = nub $ getColors fileContents
     nameFun' = bool (pure . colorToVar) (colorInput colorToVarNamed) nameB
     matchColors = map matchExact $ colors
     notColon ':' = False

@@ -12,6 +12,7 @@ data ColorOpt = ColorOpt
   { var        :: Bool 
   , name       :: Bool
   , filePath   :: FilePath
+  , cmd        :: (Maybe String)
   }
 
 opts :: ParserInfo ColorOpt
@@ -35,5 +36,11 @@ colorOpt = ColorOpt
       <*> strArgument
           ( help "Filepath of css/html file"
          <> metavar "PATH"
+          )
+      <*> option (optional str)
+          ( help "Command to run on each color, formatted \"#XXXXXX\""
+         <> long "command"
+         <> short 'c'
+         <> metavar "COMMAND"
           )
 
