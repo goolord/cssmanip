@@ -3,33 +3,29 @@
 
 module Main where
 
-import Data.Maybe
+import Control.Monad
 import Data.Bool
+import Data.ByteString.Char8 (ByteString)
+import Data.Foldable
+import Data.Functor.Identity
+import Data.List (nub)
+import Data.Map.Strict (Map, (!?))
+import Data.Maybe
 import Options.Applicative
 import Optparse
-import Data.ByteString.Char8 (ByteString)
-import Text.Regex.TDFA
-import Data.Foldable
-import Data.Map.Strict (Map, (!?))
-import Data.List (nub)
-import Data.Functor.Identity
-import qualified Data.Map.Strict as M
-import qualified Data.ByteString.Char8 as B
 import System.Process
-
-blank :: Applicative m => m ()
-blank = pure ()
-
-bb :: Bool -> IO () -> IO ()
-bb b act = if b then act else blank
+import Text.Regex.TDFA
+import qualified Data.ByteString.Char8 as B
+import qualified Data.Map.Strict as M
 
 main :: IO ()
 main = do
   options <- execParser opts
   fileContents <- B.readFile $ filePath options
-  bb (var options)
-     (B.putStrLn =<< (replaceColorVar fileContents $ name options))
-  maybe blank (B.putStrLn =<<) (apColor fileContents <$> cmd options)
+  when (var options)
+       (B.putStrLn =<< (replaceColorVar fileContents $ name options))
+  mapM_ (B.putStrLn =<<) 
+        (apColor fileContents <$> cmd options)
 
 apColor :: ByteString -> String -> IO ByteString
 apColor fileContents cmd' = do 
